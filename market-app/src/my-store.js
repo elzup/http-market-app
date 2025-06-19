@@ -28,7 +28,7 @@ const ASSETS_FILE = path.join(__dirname, '../data/assets.json')
 const TRANSACTIONS_FILE = path.join(__dirname, '../data/transactions.json')
 const PRODUCT_FILE = path.join(__dirname, '../data/product.json')
 const ASSETS_LOCK_FILE = path.join(__dirname, '../data/assets.lock')
-const CENTRAL_SERVER = 'https://1dc1-113-149-250-1.ngrok-free.app' // centoral-server のアドレス（ポートを8090に変更）
+const CENTRAL_SERVER = 'https://2c8f-113-149-250-1.ngrok-free.app' // centoral-server のアドレス
 const MARKET_SYNC_INTERVAL = 15000 // 15秒
 const PUBLIC_DIR = path.join(__dirname, '../public')
 
