@@ -17,25 +17,39 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import axios from 'axios'
 import fs from 'node:fs'
+import { PORT, CENTRAL_SERVER, MARKET_SYNC_INTERVAL } from './config.js'
 
 // ESモジュールで__dirnameを使用するための設定
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // 定数
-const PORT = process.env.PORT || 8082
 const ASSETS_FILE = path.join(__dirname, '../data/assets.json')
 const TRANSACTIONS_FILE = path.join(__dirname, '../data/transactions.json')
 const PRODUCT_FILE = path.join(__dirname, '../data/product.json')
 const ASSETS_LOCK_FILE = path.join(__dirname, '../data/assets.lock')
-const CENTRAL_SERVER = 'https://2c8f-113-149-250-1.ngrok-free.app' // centoral-server のアドレス
-const MARKET_SYNC_INTERVAL = 15000 // 15秒
 const PUBLIC_DIR = path.join(__dirname, '../public')
 
 // サーバーの状態
 let serverState = 'INIT'
 let myProducts = [] // 複数商品に対応するため配列に変更
-let myIpAddress = '127.0.0.1' // 開発環境ではローカルホストを使用
+let myIpAddress = '127.0.0.1' // デフォルト値（取得失敗時に使用）
+
+/**
+ * IPアドレスを外部APIから取得する関数
+ * @returns {Promise<string>} 取得したIPアドレス
+ */
+async function fetchIpAddress() {
+  try {
+    // ipify.orgのAPIを使用してIPアドレスを取得
+    const response = await axios.get('https://api.ipify.org?format=json')
+    return response.data.ip
+  } catch (error) {
+    console.error('IPアドレスの取得に失敗しました:', error.message)
+    // 取得に失敗した場合はデフォルト値を返す
+    return myIpAddress
+  }
+}
 
 // Expressアプリケーションの初期化
 const app = express()
@@ -480,6 +494,18 @@ async function initializeServer() {
     }
 
     serverState = 'CONFIGURED'
+
+    // IPアドレスを自動取得
+    try {
+      console.log('IPアドレスを取得しています...')
+      myIpAddress = await fetchIpAddress()
+      console.log(`IPアドレスを取得しました: ${myIpAddress}`)
+    } catch (error) {
+      console.error(
+        'IPアドレスの取得に失敗しました。デフォルト値を使用します:',
+        myIpAddress
+      )
+    }
 
     // サーバーを起動
     app.listen(PORT, async () => {

@@ -12,6 +12,22 @@
     ],
     "address": "127.0.0.1:8082",
     "status": "ONLINE",
-    "updatedAt": "2025-06-19T23:23:21.157Z"
+    "updatedAt": "2025-06-19T23:27:12.010Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "113.149.250.1:8082",
+    "status": "OFFLINE",
+    "createdAt": "2025-06-19T23:33:20.435Z",
+    "updatedAt": "2025-06-19T23:33:20.435Z"
   }
 ]
