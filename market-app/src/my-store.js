@@ -28,7 +28,7 @@ const ASSETS_FILE = path.join(__dirname, '../data/assets.json')
 const TRANSACTIONS_FILE = path.join(__dirname, '../data/transactions.json')
 const PRODUCT_FILE = path.join(__dirname, '../data/product.json')
 const ASSETS_LOCK_FILE = path.join(__dirname, '../data/assets.lock')
-const CENTRAL_SERVER = 'http://localhost:8080'
+const CENTRAL_SERVER = 'http://localhost:8080' // centoral-server のアドレス
 const MARKET_SYNC_INTERVAL = 15000 // 15秒
 
 // サーバーの状態

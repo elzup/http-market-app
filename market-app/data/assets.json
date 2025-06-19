@@ -1,10 +1,10 @@
 {
-  "capitalYen": 100000120,
+  "capitalYen": 100000000,
   "procurementPts": 40,
   "inventory": [
     {
       "product": "りんごジュース",
-      "qty": 833332
+      "qty": 833333
     }
   ],
   "collection": []

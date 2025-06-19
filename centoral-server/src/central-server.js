@@ -216,8 +216,8 @@ app.listen(PORT, async () => {
     // publicディレクトリの存在を確認
     const publicDirExists = fs.existsSync(publicDir)
     console.log(
-      `静的ファイル配信ディレクトリ: ${publicDir} (存在: ${
-        publicDirExists ? 'はい' : 'いいえ'
+      `静的ファイル配信ディレクトリ: ${publicDir} (${
+        publicDirExists ? 'ok' : 'ng'
       })`
     )
 

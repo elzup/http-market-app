@@ -1,11 +1,11 @@
 {
-  "name": "market-app",
+  "name": "centoral-server",
   "version": "1.0.0",
-  "description": "店側アプリケーション",
+  "description": "マーケット情報サーバー",
   "type": "module",
-  "main": "src/my-store.js",
+  "main": "src/central-server.js",
   "scripts": {
-    "start": "node src/my-store.js",
+    "start": "node src/central-server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
