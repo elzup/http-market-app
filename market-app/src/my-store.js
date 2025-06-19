@@ -228,6 +228,9 @@ async function processPurchase(productName, quantity, buyerIp) {
   // トランザクションID生成
   const tradeId = `trade-${Date.now()}-${Math.floor(Math.random() * 1000)}`
 
+  // 現在時刻（UNIX秒）
+  const timestamp = Math.floor(Date.now() / 1000)
+
   // 資産を更新
   const updatedAssets = await updateAssets((assets) => {
     // 必要な仕入れポイントを計算
@@ -245,6 +248,24 @@ async function processPurchase(productName, quantity, buyerIp) {
     // 売上を資金に加算
     const totalPrice = product.priceYen * quantity
     assets.capitalYen += totalPrice
+
+    // コレクションに追加
+    const collectionItem = {
+      tradeId,
+      product: productName,
+      qty: quantity,
+      price: product.priceYen,
+      seller: myIpAddress,
+      ts: timestamp,
+    }
+
+    // コレクションが存在しない場合は初期化
+    if (!assets.collection) {
+      assets.collection = []
+    }
+
+    // コレクションに追加
+    assets.collection.push(collectionItem)
 
     return assets
   })
@@ -313,6 +334,17 @@ async function syncMarkets() {
 // フロントエンドのメインページを提供
 app.get('/', (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'))
+})
+
+// 資産情報を取得するAPIエンドポイント
+app.get('/api/assets', async (req, res) => {
+  try {
+    const assets = await loadAssets()
+    res.json(assets)
+  } catch (error) {
+    console.error('資産情報の取得に失敗しました:', error.message)
+    res.status(500).json({ error: '資産情報の取得に失敗しました' })
+  }
 })
 
 // Central Serverからマーケット情報を取得するプロキシエンドポイント

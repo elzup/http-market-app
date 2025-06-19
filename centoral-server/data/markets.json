@@ -1,13 +1,5 @@
 [
   {
-    "product": "りんごジュース",
-    "price": 120,
-    "address": "127.0.0.1:8081",
-    "status": "OFFLINE",
-    "createdAt": "2025-06-19T14:20:20.853Z",
-    "updatedAt": "2025-06-19T14:20:20.853Z"
-  },
-  {
     "products": [
       {
         "product": "りんごジュース",
@@ -19,7 +11,7 @@
       }
     ],
     "address": "127.0.0.1:8082",
-    "status": "ONLINE",
-    "updatedAt": "2025-06-19T16:53:59.470Z"
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-19T17:21:01.542Z"
   }
 ]

@@ -1,6 +1,39 @@
 {
-  "capitalYen": 100000150,
-  "procurementPts": 99999850,
+  "capitalYen": 100004170,
+  "procurementPts": 99995830,
   "inventory": [],
-  "collection": []
+  "collection": [
+    {
+      "tradeId": "trade-1750353026914-559",
+      "product": "りんごジュース",
+      "qty": 1,
+      "price": 120,
+      "seller": "127.0.0.1",
+      "ts": 1750353026
+    },
+    {
+      "tradeId": "trade-1750353038485-436",
+      "product": "りんごジュース",
+      "qty": 1,
+      "price": 120,
+      "seller": "127.0.0.1",
+      "ts": 1750353038
+    },
+    {
+      "tradeId": "trade-1750353045056-431",
+      "product": "りんごジュース",
+      "qty": 4,
+      "price": 120,
+      "seller": "127.0.0.1",
+      "ts": 1750353045
+    },
+    {
+      "tradeId": "trade-1750353683293-899",
+      "product": "コーヒー",
+      "qty": 22,
+      "price": 150,
+      "seller": "127.0.0.1",
+      "ts": 1750353683
+    }
+  ]
 }

@@ -7,6 +7,43 @@
  * 3. 自動更新機能
  */
 
+// コレクションアイテムコンポーネント
+function CollectionItem({ item }) {
+  // DiceBearのアバターを生成するURL - 店舗アドレスをシードとして使用して店舗と統一
+  const avatarUrl = `https://api.dicebear.com/7.x/big-ears/svg?seed=${encodeURIComponent(
+    item.seller || 'default'
+  )}`
+
+  return (
+    <div className="card mb-3">
+      <div className="card-body">
+        <div className="d-flex align-items-center mb-2">
+          <div className="me-3">
+            <img
+              src={avatarUrl}
+              alt="Product avatar"
+              width="50"
+              height="50"
+              className="rounded"
+            />
+          </div>
+          <div>
+            <h5 className="card-title mb-1">{item.product}</h5>
+            <h6 className="card-subtitle text-muted">購入数: {item.qty}個</h6>
+          </div>
+        </div>
+        <p className="card-text mb-1">購入元: {item.seller}</p>
+        <p className="card-text mb-1">価格: {item.price}円</p>
+        <p className="card-text">
+          <small className="text-muted">
+            購入日: {new Date(item.ts * 1000).toLocaleString('ja-JP')}
+          </small>
+        </p>
+      </div>
+    </div>
+  )
+}
+
 // マーケットカードコンポーネント
 function MarketCard({ market, onSelect }) {
   const statusClass =
@@ -19,6 +56,14 @@ function MarketCard({ market, onSelect }) {
   const handleClick = () => {
     if (market.status === 'ONLINE') {
       onSelect(market)
+    }
+  }
+
+  // 商品をクリックしたときのハンドラー
+  const handleProductClick = (e, product, index) => {
+    e.stopPropagation() // 親要素のクリックイベントを停止
+    if (market.status === 'ONLINE') {
+      onSelect(market, product, index)
     }
   }
 
@@ -60,7 +105,12 @@ function MarketCard({ market, onSelect }) {
                 key={index}
                 className="list-group-item d-flex justify-content-between align-items-center"
               >
-                {product.product}
+                <span
+                  onClick={(e) => handleProductClick(e, product, index)}
+                  style={{ cursor: 'pointer', color: '#007bff' }}
+                >
+                  {product.product}
+                </span>
                 <span className="badge bg-primary rounded-pill">
                   {product.price}円
                 </span>
@@ -78,13 +128,41 @@ function MarketCard({ market, onSelect }) {
 }
 
 // 購入フォームコンポーネント
-function PurchaseForm({ market, onCancel, onPurchase }) {
-  const [selectedProductIndex, setSelectedProductIndex] = React.useState(0)
+function PurchaseForm({
+  market,
+  onCancel,
+  onPurchase,
+  initialProductIndex = 0,
+  assets = {},
+}) {
+  const [selectedProductIndex, setSelectedProductIndex] =
+    React.useState(initialProductIndex)
   const [quantity, setQuantity] = React.useState(1)
   const [isLoading, setIsLoading] = React.useState(false)
 
   const selectedProduct = market.products[selectedProductIndex]
   const totalPrice = selectedProduct ? selectedProduct.price * quantity : 0
+
+  // 購入後の残高を計算（assetsが存在する場合のみ）
+  const currentBalance = (assets && assets.capitalYen) || 0
+  const balanceAfterPurchase = currentBalance - totalPrice
+  const balanceDifference = -totalPrice // 負の値で表示
+
+  // 数量入力フィールドへの参照
+  const quantityInputRef = React.useRef(null)
+
+  // コンポーネントがマウントされたとき、または初期商品インデックスが変更されたときに実行
+  React.useEffect(() => {
+    // 初期商品インデックスが変更された場合、選択商品を更新
+    setSelectedProductIndex(initialProductIndex)
+
+    // 数量入力フィールドにフォーカス
+    if (quantityInputRef.current) {
+      setTimeout(() => {
+        quantityInputRef.current.focus()
+      }, 100)
+    }
+  }, [initialProductIndex])
 
   // DiceBearのアバターを生成するURL
   const avatarUrl = `https://api.dicebear.com/7.x/big-ears/svg?seed=${encodeURIComponent(
@@ -97,7 +175,9 @@ function PurchaseForm({ market, onCancel, onPurchase }) {
 
   const handleQuantityChange = (e) => {
     const value = parseInt(e.target.value) || 0
-    setQuantity(value > 0 ? value : 1)
+    const newQuantity = value > 0 ? value : 1
+    setQuantity(newQuantity)
+    // totalPriceは定数なので、setTotalPriceは不要
   }
 
   const handlePurchase = async () => {
@@ -196,6 +276,7 @@ function PurchaseForm({ market, onCancel, onPurchase }) {
               min="1"
               value={quantity}
               onChange={handleQuantityChange}
+              ref={quantityInputRef}
             />
           </div>
         </div>
@@ -209,6 +290,27 @@ function PurchaseForm({ market, onCancel, onPurchase }) {
                 <p className="card-text">
                   <strong>合計金額: {totalPrice}円</strong>
                 </p>
+                {assets && typeof assets.capitalYen !== 'undefined' ? (
+                  <div className="mt-3 p-2 bg-light rounded">
+                    <p className="card-text mb-1">
+                      <small>
+                        現在の残高: {currentBalance.toLocaleString()}円
+                      </small>
+                    </p>
+                    <p className="card-text mb-1">
+                      <small
+                        className={balanceDifference < 0 ? 'text-danger' : ''}
+                      >
+                        差引: {balanceDifference.toLocaleString()}円
+                      </small>
+                    </p>
+                    <p className="card-text">
+                      <small>
+                        購入後残高: {balanceAfterPurchase.toLocaleString()}円
+                      </small>
+                    </p>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
@@ -273,10 +375,14 @@ function ResultDisplay({ success, message, details, onClose }) {
 function App() {
   const [markets, setMarkets] = React.useState([])
   const [selectedMarket, setSelectedMarket] = React.useState(null)
+  const [selectedProductIndex, setSelectedProductIndex] = React.useState(0)
   const [lastUpdated, setLastUpdated] = React.useState(null)
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState(null)
   const [purchaseResult, setPurchaseResult] = React.useState(null)
+  const [collection, setCollection] = React.useState([])
+  const [showCollection, setShowCollection] = React.useState(false)
+  const [assets, setAssets] = React.useState({})
 
   // マーケット情報を取得する
   const fetchMarkets = async () => {
@@ -301,10 +407,17 @@ function App() {
   }
 
   // マーケットを選択する
-  const handleSelectMarket = (market) => {
+  const handleSelectMarket = (market, product = null, productIndex = 0) => {
     // 複数商品に対応
     setSelectedMarket(market)
     setPurchaseResult(null)
+
+    // 商品が指定されている場合は、その商品を選択
+    if (product !== null) {
+      setSelectedProductIndex(productIndex)
+    } else {
+      setSelectedProductIndex(0)
+    }
 
     // スクロール
     setTimeout(() => {
@@ -320,14 +433,51 @@ function App() {
     setSelectedMarket(null)
   }
 
+  // コレクションデータを取得する
+  const fetchCollection = async () => {
+    try {
+      const response = await fetch('/api/assets')
+      if (!response.ok) {
+        throw new Error(`サーバーエラー: ${response.status}`)
+      }
+
+      const data = await response.json()
+      setCollection(data.collection || [])
+    } catch (error) {
+      console.error('コレクションデータの取得に失敗しました:', error)
+    }
+  }
+
+  // 資産データを取得する
+  const fetchAssets = async () => {
+    try {
+      const response = await fetch('/api/assets')
+      if (!response.ok) {
+        throw new Error(`サーバーエラー: ${response.status}`)
+      }
+
+      const data = await response.json()
+      setAssets(data)
+      setCollection(data.collection || [])
+    } catch (error) {
+      console.error('資産データの取得に失敗しました:', error)
+    }
+  }
+
+  // コレクション表示の切り替え
+  const toggleCollection = () => {
+    setShowCollection(!showCollection)
+  }
+
   // 購入結果を処理する
   const handlePurchaseResult = (success, message, details) => {
     setPurchaseResult({ success, message, details })
     setSelectedMarket(null)
 
-    // 購入成功時はマーケット情報を更新
+    // 購入成功時はマーケット情報とコレクションを更新
     if (success) {
       fetchMarkets()
+      fetchCollection()
     }
 
     // スクロール
@@ -344,12 +494,18 @@ function App() {
     setPurchaseResult(null)
   }
 
-  // コンポーネントがマウントされたときにマーケット情報を取得
+  // コンポーネントがマウントされたときにマーケット情報とコレクションを取得
   React.useEffect(() => {
     fetchMarkets()
+    fetchCollection()
+    fetchAssets()
 
     // 15秒ごとに自動更新
-    const intervalId = setInterval(fetchMarkets, 15000)
+    const intervalId = setInterval(() => {
+      fetchMarkets()
+      fetchCollection()
+      fetchAssets()
+    }, 15000)
 
     // クリーンアップ関数
     return () => clearInterval(intervalId)
@@ -360,51 +516,89 @@ function App() {
   return (
     <div className="container py-4">
       <header className="pb-3 mb-4 border-bottom">
-        <h1 className="display-5 fw-bold">マーケット情報</h1>
+        <div className="d-flex justify-content-between align-items-center">
+          <h1 className="display-5 fw-bold">マーケット情報</h1>
+          <button
+            className="btn btn-outline-primary"
+            onClick={toggleCollection}
+          >
+            {showCollection ? 'マーケット一覧に戻る' : 'コレクションを表示'}
+          </button>
+        </div>
       </header>
 
-      <section className="mb-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2>マーケット一覧</h2>
-          <div>
-            <button
-              className="btn btn-primary me-2"
-              onClick={fetchMarkets}
-              disabled={isLoading}
-            >
-              {isLoading ? '更新中...' : '更新'}
+      {showCollection ? (
+        <section className="mb-4">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h2>購入済みコレクション</h2>
+            <button className="btn btn-primary" onClick={fetchCollection}>
+              更新
             </button>
-            {lastUpdated && (
-              <small className="text-muted">
-                最終更新: {lastUpdated.toLocaleTimeString('ja-JP')}
-              </small>
-            )}
           </div>
-        </div>
 
-        {error ? (
-          <div className="alert alert-danger">{error}</div>
-        ) : markets.length === 0 ? (
-          <div className="alert alert-info">
-            登録されているマーケットはありません。
+          {collection.length === 0 ? (
+            <div className="alert alert-info">
+              購入済みアイテムはありません。マーケットから商品を購入してコレクションを増やしましょう。
+            </div>
+          ) : (
+            <div className="row">
+              {collection.map((item, index) => (
+                <div className="col-md-6 col-lg-4" key={index}>
+                  <CollectionItem item={item} />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      ) : (
+        <section className="mb-4">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h2>マーケット一覧</h2>
+            <div>
+              <button
+                className="btn btn-primary me-2"
+                onClick={fetchMarkets}
+                disabled={isLoading}
+              >
+                {isLoading ? '更新中...' : '更新'}
+              </button>
+              {lastUpdated && (
+                <small className="text-muted">
+                  最終更新: {lastUpdated.toLocaleTimeString('ja-JP')}
+                </small>
+              )}
+            </div>
           </div>
-        ) : (
-          <div className="row">
-            {markets.map((market, index) => (
-              <div className="col-md-6 col-lg-4" key={market.address || index}>
-                <MarketCard market={market} onSelect={handleSelectMarket} />
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+
+          {error ? (
+            <div className="alert alert-danger">{error}</div>
+          ) : markets.length === 0 ? (
+            <div className="alert alert-info">
+              登録されているマーケットはありません。
+            </div>
+          ) : (
+            <div className="row">
+              {markets.map((market, index) => (
+                <div
+                  className="col-md-6 col-lg-4"
+                  key={market.address || index}
+                >
+                  <MarketCard market={market} onSelect={handleSelectMarket} />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {selectedMarket && (
         <section id="purchase-section" className="mb-4">
           <PurchaseForm
             market={selectedMarket}
+            initialProductIndex={selectedProductIndex}
             onCancel={handleCancelPurchase}
             onPurchase={handlePurchaseResult}
+            assets={assets}
           />
         </section>
       )}
