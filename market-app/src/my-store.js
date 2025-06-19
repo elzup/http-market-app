@@ -28,17 +28,21 @@ const ASSETS_FILE = path.join(__dirname, '../data/assets.json')
 const TRANSACTIONS_FILE = path.join(__dirname, '../data/transactions.json')
 const PRODUCT_FILE = path.join(__dirname, '../data/product.json')
 const ASSETS_LOCK_FILE = path.join(__dirname, '../data/assets.lock')
-const CENTRAL_SERVER = 'http://localhost:8080' // centoral-server のアドレス
+const CENTRAL_SERVER = 'http://localhost:8090' // centoral-server のアドレス（ポートを8090に変更）
 const MARKET_SYNC_INTERVAL = 15000 // 15秒
+const PUBLIC_DIR = path.join(__dirname, '../public')
 
 // サーバーの状態
 let serverState = 'INIT'
-let myProduct = null
+let myProducts = [] // 複数商品に対応するため配列に変更
 let myIpAddress = '127.0.0.1' // 開発環境ではローカルホストを使用
 
 // Expressアプリケーションの初期化
 const app = express()
 app.use(express.json())
+
+// 静的ファイル配信のためのミドルウェアを追加
+app.use(express.static(PUBLIC_DIR))
 
 // CORS設定
 app.use((req, res, next) => {
@@ -111,26 +115,28 @@ async function loadTransactions() {
 
 /**
  * 商品情報を読み込む
- * ファイルが存在しない場合はnullを返す
- * @returns {Promise<Object|null>} 商品情報またはnull
+ * ファイルが存在しない場合は空の配列を返す
+ * @returns {Promise<Array>} 商品情報の配列
  */
 async function loadProduct() {
   try {
-    return await readJSON(PRODUCT_FILE)
+    const products = await readJSON(PRODUCT_FILE)
+    // 単一商品の場合は配列に変換
+    return Array.isArray(products) ? products : [products]
   } catch (error) {
     console.log('商品情報ファイルが見つかりません')
-    return null
+    return []
   }
 }
 
 /**
  * 商品情報を保存する
- * @param {Object} product 商品情報
+ * @param {Array} products 商品情報の配列
  * @returns {Promise<void>}
  */
-async function saveProduct(product) {
+async function saveProduct(products) {
   try {
-    await writeJSON(PRODUCT_FILE, product)
+    await writeJSON(PRODUCT_FILE, products)
   } catch (error) {
     console.error('商品情報の保存に失敗しました:', error)
     throw error
@@ -193,50 +199,15 @@ async function recordTransaction(transaction) {
 }
 
 /**
- * 商品を定義し、在庫を計算する
- * @param {string} productName 商品名
- * @param {number} priceYen 価格（円）
- * @returns {Promise<Object>} 商品情報と在庫数量
+ * 商品を定義する
+ * @param {Array} productsData 商品情報の配列
+ * @returns {Promise<Array>} 商品情報の配列
  */
-async function defineProduct(productName, priceYen) {
-  // 商品情報を作成
-  const product = {
-    name: productName,
-    priceYen: priceYen,
-  }
-
-  // 資産を読み込む
-  const assets = await loadAssets()
-
-  // 在庫数量を計算
-  const quantity = Math.floor(assets.procurementPts / priceYen)
-
-  // 消費される仕入れポイント
-  const consumedPts = quantity * priceYen
-
-  // 資産を更新
-  await updateAssets((assets) => {
-    // 仕入れポイントを消費
-    assets.procurementPts -= consumedPts
-
-    // 在庫に商品を追加
-    assets.inventory = [
-      {
-        product: productName,
-        qty: quantity,
-      },
-    ]
-
-    return assets
-  })
-
+async function defineProducts(productsData) {
   // 商品情報を保存
-  await saveProduct(product)
+  await saveProduct(productsData)
 
-  return {
-    ...product,
-    quantity,
-  }
+  return productsData
 }
 
 /**
@@ -247,8 +218,10 @@ async function defineProduct(productName, priceYen) {
  * @returns {Promise<Object>} 処理結果
  */
 async function processPurchase(productName, quantity, buyerIp) {
-  // 商品名の一致を確認
-  if (productName !== myProduct.name) {
+  // 商品名に一致する商品を検索
+  const product = myProducts.find((p) => p.name === productName)
+
+  if (!product) {
     throw new Error('商品名が一致しません')
   }
 
@@ -257,19 +230,20 @@ async function processPurchase(productName, quantity, buyerIp) {
 
   // 資産を更新
   const updatedAssets = await updateAssets((assets) => {
-    // 在庫を確認
-    const inventoryItem = assets.inventory.find(
-      (item) => item.product === productName
-    )
-    if (!inventoryItem || inventoryItem.qty < quantity) {
-      throw new Error('在庫が不足しています')
+    // 必要な仕入れポイントを計算
+    const requiredPts = product.priceYen * quantity
+
+    // 仕入れポイントが十分かチェック
+    if (assets.procurementPts < requiredPts) {
+      // エラーを投げるのではなく、falseを返す
+      return false
     }
 
-    // 在庫を減らす
-    inventoryItem.qty -= quantity
+    // 仕入れポイントを消費
+    assets.procurementPts -= requiredPts
 
     // 売上を資金に加算
-    const totalPrice = myProduct.priceYen * quantity
+    const totalPrice = product.priceYen * quantity
     assets.capitalYen += totalPrice
 
     return assets
@@ -282,7 +256,7 @@ async function processPurchase(productName, quantity, buyerIp) {
     seller: myIpAddress,
     product: productName,
     qty: quantity,
-    price: myProduct.priceYen,
+    price: product.priceYen,
   })
 
   return {
@@ -290,7 +264,7 @@ async function processPurchase(productName, quantity, buyerIp) {
     tradeId,
     product: productName,
     qty: quantity,
-    totalPrice: myProduct.priceYen * quantity,
+    totalPrice: product.priceYen * quantity,
   }
 }
 
@@ -302,9 +276,11 @@ async function registerToMarket() {
   try {
     const response = await axios.post(`${CENTRAL_SERVER}/register`, {
       ip: myIpAddress,
-      product: myProduct.name,
-      priceYen: myProduct.priceYen,
       port: PORT,
+      products: myProducts.map((product) => ({
+        product: product.name,
+        priceYen: product.priceYen,
+      })),
     })
 
     console.log('マーケット登録完了:', response.data)
@@ -334,16 +310,32 @@ async function syncMarkets() {
   }
 }
 
+// フロントエンドのメインページを提供
+app.get('/', (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'index.html'))
+})
+
+// Central Serverからマーケット情報を取得するプロキシエンドポイント
+app.get('/api/markets', async (req, res) => {
+  try {
+    const response = await axios.get(`${CENTRAL_SERVER}/markets`)
+    res.json(response.data)
+  } catch (error) {
+    console.error('マーケット情報の取得に失敗しました:', error.message)
+    res.status(500).json({ error: 'マーケット情報の取得に失敗しました' })
+  }
+})
+
 // ヘルスチェックAPI
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: serverState,
-    product: myProduct,
+    products: myProducts,
     timestamp: new Date().toISOString(),
   })
 })
 
-// 購入API
+// 購入API - ローカルからのアクセスのみ許可
 app.post('/buy', async (req, res) => {
   try {
     // サーバーがアクティブでない場合はエラー
@@ -351,6 +343,20 @@ app.post('/buy', async (req, res) => {
       return res
         .status(503)
         .json({ error: 'サーバーがアクティブではありません' })
+    }
+
+    // クライアントのIPアドレスを取得
+    const clientIp = req.ip.replace('::ffff:', '') // IPv4マッピングアドレスの場合の対応
+
+    // ローカルからのアクセスのみ許可（127.0.0.1またはlocalhostからのアクセス）
+    if (
+      clientIp !== '127.0.0.1' &&
+      clientIp !== 'localhost' &&
+      clientIp !== '::1'
+    ) {
+      return res
+        .status(403)
+        .json({ error: 'この操作はローカルからのみ許可されています' })
     }
 
     const { product, qty } = req.body
@@ -367,17 +373,20 @@ app.post('/buy', async (req, res) => {
     }
 
     // 購入者のIPアドレスを取得
-    const buyerIp = req.ip.replace('::ffff:', '') // IPv4マッピングアドレスの場合の対応
+    const buyerIp = clientIp
 
     try {
       // 購入処理を実行
       const result = await processPurchase(product, qty, buyerIp)
+
+      if (result === false) {
+        // 仕入れポイントが不足している場合
+        return res.status(409).json({ error: '仕入れポイントが不足しています' })
+      }
+
       res.status(200).json(result)
     } catch (error) {
-      if (
-        error.message === '商品名が一致しません' ||
-        error.message === '在庫が不足しています'
-      ) {
+      if (error.message === '商品名が一致しません') {
         return res.status(409).json({ error: error.message })
       }
       throw error
@@ -404,19 +413,27 @@ async function initializeServer() {
     await loadTransactions()
 
     // 商品情報を読み込む
-    myProduct = await loadProduct()
+    myProducts = await loadProduct()
 
     // 商品が定義されていない場合は新規作成
-    if (!myProduct) {
+    if (myProducts.length === 0) {
       console.log('商品が定義されていません。新しい商品を定義します。')
 
       // 実際のアプリケーションではユーザー入力を受け付けるが、
       // ここではデモ用に固定値を使用
-      const productName = 'りんごジュース'
-      const priceYen = 120
+      const productsData = [
+        {
+          name: 'りんごジュース',
+          priceYen: 120,
+        },
+        {
+          name: 'コーヒー',
+          priceYen: 150,
+        },
+      ]
 
-      myProduct = await defineProduct(productName, priceYen)
-      console.log('商品を定義しました:', myProduct)
+      myProducts = await defineProducts(productsData)
+      console.log('商品を定義しました:', myProducts)
     }
 
     serverState = 'CONFIGURED'
@@ -424,6 +441,15 @@ async function initializeServer() {
     // サーバーを起動
     app.listen(PORT, async () => {
       console.log(`店側アプリケーションが起動しました - ポート: ${PORT}`)
+      console.log(`ウェブUIは http://localhost:${PORT}/ で利用可能です`)
+
+      // 静的ファイル配信ディレクトリの存在を確認
+      const publicDirExists = fs.existsSync(PUBLIC_DIR)
+      console.log(
+        `静的ファイル配信ディレクトリ: ${PUBLIC_DIR} (${
+          publicDirExists ? 'ok' : 'ng'
+        })`
+      )
 
       // マーケットに登録
       try {

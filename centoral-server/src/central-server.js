@@ -20,7 +20,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // 定数
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || 8090 // 8080から8090に変更
 const MARKETS_FILE = path.join(__dirname, '../data/markets.json')
 const HEALTH_CHECK_INTERVAL = 30000 // 30秒
 
@@ -42,10 +42,7 @@ app.use((req, res, next) => {
   next()
 })
 
-// 静的ファイル配信の設定
-const publicDir = path.resolve(__dirname, '../public')
-console.log(`静的ファイル配信ディレクトリ(絶対パス): ${publicDir}`)
-app.use(express.static(publicDir))
+// 静的ファイル配信の設定は削除（market-app側に移動）
 
 /**
  * マーケット情報を読み込む
@@ -119,25 +116,43 @@ async function performHealthChecks() {
   }
 }
 
-// ルートパスへのアクセス時にindex.htmlを返す
+// ルートパスへのアクセス時にAPIの情報を返す
 app.get('/', (req, res) => {
-  res.sendFile(path.join(publicDir, 'index.html'))
+  res.json({
+    name: 'HTTP Market Central Server',
+    version: '1.0.0',
+    endpoints: [
+      { path: '/markets', method: 'GET', description: 'マーケット一覧を取得' },
+      { path: '/register', method: 'POST', description: 'マーケットを登録' },
+    ],
+  })
 })
 
 // マーケット登録API
 app.post('/register', async (req, res) => {
   try {
-    const { ip, product, priceYen, port } = req.body
+    const { ip, port, products } = req.body
 
     // バリデーション
-    if (!ip || !product || !priceYen || !port) {
+    if (
+      !ip ||
+      !port ||
+      !products ||
+      !Array.isArray(products) ||
+      products.length === 0
+    ) {
       return res.status(400).json({ error: '必須パラメータが不足しています' })
     }
 
-    if (typeof priceYen !== 'number' || priceYen <= 0) {
-      return res
-        .status(400)
-        .json({ error: '価格は正の数値である必要があります' })
+    // 各商品の価格が正の数値であることを確認
+    for (const item of products) {
+      if (
+        !item.product ||
+        typeof item.priceYen !== 'number' ||
+        item.priceYen <= 0
+      ) {
+        return res.status(400).json({ error: '商品名と正の価格が必要です' })
+      }
     }
 
     // マーケット情報を読み込む
@@ -152,8 +167,10 @@ app.post('/register', async (req, res) => {
     if (existingIndex >= 0) {
       // 既存のマーケットを更新
       markets[existingIndex] = {
-        product,
-        price: priceYen,
+        products: products.map((p) => ({
+          product: p.product,
+          price: p.priceYen,
+        })),
         address,
         status: 'ONLINE',
         updatedAt: new Date().toISOString(),
@@ -161,8 +178,10 @@ app.post('/register', async (req, res) => {
     } else {
       // 新しいマーケットを追加
       markets.push({
-        product,
-        price: priceYen,
+        products: products.map((p) => ({
+          product: p.product,
+          price: p.priceYen,
+        })),
         address,
         status: 'ONLINE',
         createdAt: new Date().toISOString(),
@@ -186,12 +205,30 @@ app.get('/markets', async (req, res) => {
     const markets = await loadMarkets()
 
     // クライアントに返すデータを整形
-    const responseData = markets.map((market) => ({
-      product: market.product,
-      price: market.price,
-      address: market.address,
-      status: market.status || 'UNKNOWN',
-    }))
+    const responseData = markets
+      .map((market) => {
+        // 複数商品に対応
+        if (market.products && Array.isArray(market.products)) {
+          return {
+            products: market.products,
+            address: market.address,
+            status: market.status || 'UNKNOWN',
+          }
+        } else if (market.product) {
+          // 後方互換性のため、単一商品の場合も対応
+          return {
+            products: [
+              {
+                product: market.product,
+                price: market.price,
+              },
+            ],
+            address: market.address,
+            status: market.status || 'UNKNOWN',
+          }
+        }
+      })
+      .filter(Boolean) // nullやundefinedを除外
 
     res.status(200).json(responseData)
   } catch (error) {
@@ -213,13 +250,7 @@ app.listen(PORT, async () => {
       fs.mkdirSync(dataDir, { recursive: true })
     }
 
-    // publicディレクトリの存在を確認
-    const publicDirExists = fs.existsSync(publicDir)
-    console.log(
-      `静的ファイル配信ディレクトリ: ${publicDir} (${
-        publicDirExists ? 'ok' : 'ng'
-      })`
-    )
+    // 静的ファイル配信は削除（market-app側に移動）
 
     // マーケット情報を読み込む（ファイルが存在しない場合は新規作成される）
     await loadMarkets()

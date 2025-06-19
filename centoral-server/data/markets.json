@@ -8,10 +8,18 @@
     "updatedAt": "2025-06-19T14:20:20.853Z"
   },
   {
-    "product": "りんごジュース",
-    "price": 120,
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
     "address": "127.0.0.1:8082",
     "status": "ONLINE",
-    "updatedAt": "2025-06-19T16:12:55.321Z"
+    "updatedAt": "2025-06-19T16:53:59.470Z"
   }
 ]
