@@ -1,0 +1,38 @@
+{
+  "name": "Market App Development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "portsAttributes": {
+    "8081": {
+      "label": "Market App",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "runArgs": [
+    // Linux上のDocker 20.10以上であれば host-gateway を使えます
+    "--add-host=host.docker.internal:host-gateway"
+  ],
+  "forwardPorts": [8081],
+  "postCreateCommand": "npm install",
+  "remoteUser": "node",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": true
+        }
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}

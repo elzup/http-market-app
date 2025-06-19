@@ -1,6 +1,6 @@
 {
-  "capitalYen": 100004170,
-  "procurementPts": 99995830,
+  "capitalYen": 100004290,
+  "procurementPts": 99995710,
   "inventory": [],
   "collection": [
     {
@@ -34,6 +34,14 @@
       "price": 150,
       "seller": "127.0.0.1",
       "ts": 1750353683
+    },
+    {
+      "tradeId": "trade-1750375417619-60",
+      "product": "りんごジュース",
+      "qty": 1,
+      "price": 120,
+      "seller": "127.0.0.1",
+      "ts": 1750375417
     }
   ]
 }

@@ -28,7 +28,7 @@ const ASSETS_FILE = path.join(__dirname, '../data/assets.json')
 const TRANSACTIONS_FILE = path.join(__dirname, '../data/transactions.json')
 const PRODUCT_FILE = path.join(__dirname, '../data/product.json')
 const ASSETS_LOCK_FILE = path.join(__dirname, '../data/assets.lock')
-const CENTRAL_SERVER = 'http://localhost:8090' // centoral-server のアドレス（ポートを8090に変更）
+const CENTRAL_SERVER = 'https://1dc1-113-149-250-1.ngrok-free.app' // centoral-server のアドレス（ポートを8090に変更）
 const MARKET_SYNC_INTERVAL = 15000 // 15秒
 const PUBLIC_DIR = path.join(__dirname, '../public')
 
@@ -307,8 +307,19 @@ async function registerToMarket() {
     console.log('マーケット登録完了:', response.data)
     serverState = 'REGISTERED'
   } catch (error) {
+    // 接続エラー（ECONNREFUSED）を特定して適切にキャッチする
+    if (error.code === 'ECONNREFUSED') {
+      console.error(
+        '中央サーバーに接続できません。サーバーが起動しているか確認してください。'
+      )
+      serverState = 'ERROR'
+      return
+    }
+
+    // その他のエラーの場合も、スタックトレースを表示せず簡潔なメッセージのみを表示
     console.error('マーケット登録に失敗しました:', error.message)
-    throw error
+    serverState = 'ERROR'
+    // エラーを再スローしない
   }
 }
 
