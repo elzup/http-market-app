@@ -11,7 +11,7 @@
       }
     ],
     "address": "127.0.0.1:8082",
-    "status": "ONLINE",
+    "status": "OFFLINE",
     "updatedAt": "2025-06-19T23:27:12.010Z"
   },
   {
@@ -29,5 +29,519 @@
     "status": "OFFLINE",
     "createdAt": "2025-06-19T23:33:20.435Z",
     "updatedAt": "2025-06-19T23:33:20.435Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.205.171:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T00:49:35.156Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      },
+      {
+        "product": "0000000",
+        "price": 5000
+      }
+    ],
+    "address": "133.14.198.33:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:19:10.830Z"
+  },
+  {
+    "products": [
+      {
+        "product": "チュロス",
+        "price": 600
+      },
+      {
+        "product": "ポテト",
+        "price": 400
+      },
+      {
+        "product": "ピザ",
+        "price": 1200
+      }
+    ],
+    "address": "133.14.204.32:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:22:18.185Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.212.221:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T03:02:29.078Z"
+  },
+  {
+    "products": [
+      {
+        "product": "スイーツサンド",
+        "price": 380
+      },
+      {
+        "product": "週刊少年ジャンプ",
+        "price": 280
+      },
+      {
+        "product": "列車補給標章",
+        "price": 610
+      }
+    ],
+    "address": "133.14.199.229:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:42:18.504Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      },
+      {
+        "product": "やる気",
+        "price": 20000
+      }
+    ],
+    "address": "133.14.192.80:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:44:14.290Z"
+  },
+  {
+    "products": [
+      {
+        "product": "任天丼2",
+        "price": 120
+      },
+      {
+        "product": "マリ子カート世界",
+        "price": 150
+      }
+    ],
+    "address": "133.14.206.73:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T02:07:14.165Z"
+  },
+  {
+    "products": [
+      {
+        "product": "パン",
+        "price": 100
+      },
+      {
+        "product": "ごはん",
+        "price": 200
+      },
+      {
+        "product": "パスタ",
+        "price": 150
+      }
+    ],
+    "address": "133.14.192.147:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:21:45.936Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      },
+      {
+        "product": "お茶",
+        "price": 100
+      }
+    ],
+    "address": "133.14.202.218:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:24:15.854Z"
+  },
+  {
+    "products": [
+      {
+        "product": "パインアメ",
+        "price": 120
+      },
+      {
+        "product": "オレンジアメ",
+        "price": 150
+      },
+      {
+        "product": "りんご飴",
+        "price": 380
+      }
+    ],
+    "address": "133.14.219.116:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:43:10.153Z"
+  },
+  {
+    "products": [
+      {
+        "product": "蟻",
+        "price": 120
+      },
+      {
+        "product": "岩",
+        "price": 150
+      },
+      {
+        "product": "殺虫剤",
+        "price": 180
+      }
+    ],
+    "address": "133.14.199.98:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:41:48.493Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.193.74:8082",
+    "status": "OFFLINE",
+    "createdAt": "2025-06-20T00:53:57.624Z",
+    "updatedAt": "2025-06-20T00:53:57.624Z"
+  },
+  {
+    "products": [
+      {
+        "product": "ブランド米",
+        "price": 12000
+      },
+      {
+        "product": "古古古古古米",
+        "price": 150
+      },
+      {
+        "product": "PS100",
+        "price": 250000000
+      }
+    ],
+    "address": "133.14.197.212:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:48:23.905Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.209.59:8082",
+    "status": "OFFLINE",
+    "createdAt": "2025-06-20T00:56:29.405Z",
+    "updatedAt": "2025-06-20T00:56:29.405Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      },
+      {
+        "product": "ぶどうゼリー",
+        "price": 130
+      }
+    ],
+    "address": "133.14.208.171:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T03:19:49.263Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.221.174:8082",
+    "status": "OFFLINE",
+    "createdAt": "2025-06-20T01:03:41.808Z",
+    "updatedAt": "2025-06-20T01:03:41.808Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.209.119:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:22:18.205Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.193.117:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:22:58.999Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.199.125:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T02:00:03.789Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "LEXUS",
+        "price": 150
+      },
+      {
+        "product": "月",
+        "price": 5000000000
+      }
+    ],
+    "address": "133.14.204.217:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:50:28.521Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.219.54:8082",
+    "status": "OFFLINE",
+    "createdAt": "2025-06-20T01:16:06.248Z",
+    "updatedAt": "2025-06-20T01:16:06.248Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.223.135:8082",
+    "status": "OFFLINE",
+    "createdAt": "2025-06-20T01:18:36.831Z",
+    "updatedAt": "2025-06-20T01:18:36.831Z"
+  },
+  {
+    "products": [
+      {
+        "product": "冊子",
+        "price": 500
+      },
+      {
+        "product": "アクリルキーホルダー",
+        "price": 600
+      },
+      {
+        "product": "ステッカー",
+        "price": 100
+      }
+    ],
+    "address": "133.14.218.232:8082",
+    "status": "OFFLINE",
+    "createdAt": "2025-06-20T01:20:01.934Z",
+    "updatedAt": "2025-06-20T01:20:01.934Z"
+  },
+  {
+    "products": [
+      {
+        "product": "Nintendo Switch2",
+        "price": 120000
+      },
+      {
+        "product": "モアイ(設置込み)",
+        "price": 3000000
+      }
+    ],
+    "address": "133.14.222.68:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:36:27.346Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.217.238:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T02:43:50.053Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.196.244:8082",
+    "status": "OFFLINE",
+    "createdAt": "2025-06-20T01:24:06.094Z",
+    "updatedAt": "2025-06-20T01:24:06.094Z"
+  },
+  {
+    "products": [
+      {
+        "product": "スイッチ2",
+        "price": 49800
+      },
+      {
+        "product": "simカード",
+        "price": 150
+      }
+    ],
+    "address": "133.14.201.95:8082",
+    "status": "OFFLINE",
+    "createdAt": "2025-06-20T01:51:39.855Z",
+    "updatedAt": "2025-06-20T01:51:39.855Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      },
+      {
+        "product": "pan",
+        "price": 150
+      }
+    ],
+    "address": "133.14.215.42:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T01:56:25.833Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      }
+    ],
+    "address": "133.14.196.69:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T02:50:11.421Z"
+  },
+  {
+    "products": [
+      {
+        "product": "りんごジュース",
+        "price": 120
+      },
+      {
+        "product": "コーヒー",
+        "price": 150
+      },
+      {
+        "product": "なす",
+        "price": 180
+      }
+    ],
+    "address": "133.14.218.22:8082",
+    "status": "OFFLINE",
+    "updatedAt": "2025-06-20T03:06:59.162Z"
   }
 ]

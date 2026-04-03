@@ -1,10 +1,4 @@
 [
-  {
-    "name": "りんごジュース",
-    "priceYen": 120
-  },
-  {
-    "name": "コーヒー",
-    "priceYen": 150
-  }
+  { "name": "Nintendo Switch2", "priceYen": 120000 },
+  { "name": "モアイ(設置込み)", "priceYen": 3000000 }
 ]

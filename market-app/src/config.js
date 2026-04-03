@@ -8,7 +8,7 @@
 export const PORT = process.env.PORT || 8082
 
 // セントラルサーバーのアドレス
-export const CENTRAL_SERVER = 'https://2c8f-113-149-250-1.ngrok-free.app'
+export const CENTRAL_SERVER = 'http://133.14.222.68:8090'
 
 // マーケット同期間隔（ミリ秒）
 export const MARKET_SYNC_INTERVAL = 15000 // 15秒

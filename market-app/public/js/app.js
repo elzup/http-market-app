@@ -186,6 +186,7 @@ function PurchaseForm({
     setIsLoading(true)
 
     try {
+      // 購入リクエストを行う
       const response = await fetch(`http://${market.address}/buy`, {
         method: 'POST',
         headers: {
