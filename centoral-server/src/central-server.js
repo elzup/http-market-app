@@ -12,7 +12,6 @@ import express from 'express'
 import { readJSON, writeJSON } from './db.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import axios from 'axios'
 import fs from 'node:fs'
 
 // ESモジュールで__dirnameを使用するための設定
@@ -79,8 +78,8 @@ async function saveMarkets(markets) {
  */
 async function checkServerHealth(address) {
   try {
-    const response = await axios.get(`http://${address}/health`, {
-      timeout: 5000,
+    const response = await fetch(`http://${address}/health`, {
+      signal: AbortSignal.timeout(1000),
     })
     return response.status === 200
   } catch (error) {
