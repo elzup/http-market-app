@@ -13,13 +13,13 @@
 ### market-app
 
 - **フレームワーク**: Express.js
-- **HTTP クライアント**: axios
+- **HTTP クライアント**: fetch (Node.js 組み込み)
 - **データストレージ**: JSON ファイル
 
 ### centoral-server
 
 - **フレームワーク**: Express.js
-- **HTTP クライアント**: axios
+- **HTTP クライアント**: fetch (Node.js 組み込み)
 - **データストレージ**: JSON ファイル
 - **ヘルスチェック機能**: 定期的に各マーケットの状態を確認
 
@@ -29,8 +29,7 @@
 
 ```json
 "dependencies": {
-  "express": "^4.18.2",
-  "axios": "^1.6.2"
+  "express": "^4.18.2"
 }
 ```
 
@@ -38,8 +37,7 @@
 
 ```json
 "dependencies": {
-  "express": "^4.18.2",
-  "axios": "^1.6.2"
+  "express": "^4.18.2"
 }
 ```
 
